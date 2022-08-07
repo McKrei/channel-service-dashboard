@@ -1,0 +1,202 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>{{ title }}</title>
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/ready.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/demo.css' %}" rel="stylesheet">
+</head>
+<body>
+		<div class="content">
+					<div class="container-fluid">
+						<div class="card-body">
+							<div class="row">
+								<img src="{% static 'assets/img/logo.png' %}" alt="Логотип">
+								<h3 class="page-title">Каналсервис</h3>
+							</div>
+						</div>
+
+						<div class="row">
+
+							<div class="col-md-3">
+								<div class="card card-stats card-success">
+									<div class="card-body ">
+										<div class="row">
+											<div class="col-5">
+												<div class="icon-big text-center">
+													<i class="la la-bar-chart"></i>
+												</div>
+											</div>
+											<div class="col-7 d-flex align-items-center">
+												<div class="numbers">
+													<p class="card-category">Продажи</p>
+													<h4 class="card-title">$ {{ sum_price }}</h4>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-3">
+								<div class="card card-stats card-primary">
+									<div class="card-body ">
+										<div class="row">
+											<div class="col-5">
+												<div class="icon-big text-center">
+													<i class="la la-check-circle"></i>
+												</div>
+											</div>
+											<div class="col-7 d-flex align-items-center">
+												<div class="numbers">
+													<p class="card-category">Заказы</p>
+													<h4 class="card-title">{{ count_orders }}</h4>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="card card-stats">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-5">
+												<div class="icon-big text-center">
+													<i class="la la-times-circle-o text-danger"></i>
+												</div>
+											</div>
+											<div class="col-7 d-flex align-items-center">
+												<div class="numbers">
+													<p class="card-category">Вышел срок</p>
+													<h4 class="card-title">{{ count_delay }}</h4>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+
+							<div class="col-md-9">
+								<div class="card">
+									<div class="card-header">
+										<h4 class="card-title">Динамика за все время
+									</div>
+									<div class="card-body">
+										<div id="salesChart" class="chart"></div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="col-md-9">
+								<div class="card">
+									<div class="card-header ">
+										<h4 class="card-title">Таблица</h4>
+									</div>
+									<div class="card-body">
+										<table class="table table-head-bg-success table-striped table-hover">
+											<thead>
+												<tr>
+													<th scope="col">#</th>
+													<th scope="col">заказ №</th>
+													<th scope="col">стоимость,$</th>
+													<th scope="col">стоимость,руб</th>
+													<th scope="col">срок поставки</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for order in orders %}
+												<tr>
+													<td>{{ order.id }}</td>
+													<td>{{ order.number_order }}</td>
+													<td>{{ order.price_usd }}</td>
+													<td>{{ order.price_rub }}</td>
+													<td>{{ order.delivery_date }}</td>
+												</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+</body>
+
+<script src="{% static 'assets/js/core/jquery.3.2.1.min.js' %}"></script>
+<script src="{% static 'assets/js/plugin/chartist/chartist.min.js' %}"></script>
+<script src="{% static 'assets/js/plugin/chartist/plugin/chartist-plugin-tooltip.min.js' %}"></script>
+<script src="{% static 'assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js' %}"></script>
+<script src="{% static 'assets/js/plugin/chart-circle/circles.min.js' %}"></script>
+
+
+<script>
+var labels = [
+{% for day in days %}
+	"{{ day }}",
+{% endfor %}
+]
+var series = [
+{% for sum in sums %}
+	{{ sums }},
+{% endfor %}
+]
+var dataSales = {
+	labels: labels,
+	series: series
+}
+
+var optionChartSales = {
+plugins: [
+	Chartist.plugins.tooltip()
+],
+seriesBarDistance: 10,
+axisX: {
+	showGrid: false
+},
+height: "245px",
+}
+
+var responsiveChartSales = [
+['screen and (max-width: 640px)', {
+	seriesBarDistance: 5,
+	axisX: {
+		labelInterpolationFnc: function (value) {
+			return value[0];
+		}
+	}
+}]
+];
+
+Chartist.Line('#salesChart', dataSales, optionChartSales, responsiveChartSales);
+
+$(".mapcontainer").mapael({
+map: {
+	name: "world_countries",
+	zoom: {
+		enabled: true,
+		maxLevel: 10
+	},
+	defaultPlot: {
+		attrs: {
+			fill: "#004a9b"
+			, opacity: 0.6
+		}
+	}
+}
+})
+</script>
+
+</html>
